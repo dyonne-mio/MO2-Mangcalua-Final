@@ -28,18 +28,18 @@ public class AssignCommand implements Command, ParseTreeListener{
     private LocalScope scope;
     private TerminalNode id;
     private MutableContext mutableCtx;
-    private SimpleExpressionContext rhsCtx;
+    private SimpleExpressionContext RHSCtx;
     private EvaluateCommand evalCommand;
     private String builder = "";
     private List<String> excluded = new ArrayList<>();
 
-    public AssignCommand(MutableContext mutableCtx, SimpleExpressionContext rhsCtx) {
-        this.rhsCtx = rhsCtx;
+    public AssignCommand(MutableContext mutableCtx, SimpleExpressionContext RHSCtx) {
+        this.RHSCtx = RHSCtx;
         this.id = mutableCtx.Identifier();
         this.mutableCtx = mutableCtx;
         this.scope = SymbolTableManager.getInstance().getCurScope();
 
-        UndeclaredChecker checker = new UndeclaredChecker(rhsCtx);
+        UndeclaredChecker checker = new UndeclaredChecker(RHSCtx);
         checker.check();
 
         MangcaluaValue mangcaluaValue = scope.getVariableAllScope(id.getText());
@@ -54,16 +54,16 @@ public class AssignCommand implements Command, ParseTreeListener{
         }
 
         if (mutableCtx.LeftBracket() == null || mangcaluaValue.getPrimitiveType() != PrimitiveType.ARRAY) {
-            TypeMismatchChecker typeMMSemCheck = new TypeMismatchChecker(mangcaluaValue, rhsCtx);
+            TypeMismatchChecker typeMMSemCheck = new TypeMismatchChecker(mangcaluaValue, RHSCtx);
             typeMMSemCheck.check();
         }
         else {
             MangcaluaArray pa = (MangcaluaArray) mangcaluaValue.getValue();
 
-            TypeMismatchChecker checker1 = new TypeMismatchChecker(new MangcaluaValue(null, pa.getPrimitiveType()), rhsCtx);
+            TypeMismatchChecker checker1 = new TypeMismatchChecker(new MangcaluaValue(null, pa.getPrimitiveType()), RHSCtx);
             checker1.check();
         }
-        evalCommand = new EvaluateCommand(rhsCtx);
+        evalCommand = new EvaluateCommand(RHSCtx);
     }
 
     @Override
@@ -81,7 +81,7 @@ public class AssignCommand implements Command, ParseTreeListener{
 
             if (mangcaluaArray.getPrimitiveType() == PrimitiveType.STRING) {
                 ParseTreeWalker treeWalker = new ParseTreeWalker();
-                treeWalker.walk(this, this.rhsCtx);
+                treeWalker.walk(this, this.RHSCtx);
 
                 if (mangcaluaArray.isInitialized()) {
                     MangcaluaValue curValue = mangcaluaArray.getValueAt(arrIndex);
@@ -124,7 +124,7 @@ public class AssignCommand implements Command, ParseTreeListener{
             MangcaluaValue mangcaluaValue = scope.getVariableAllScope(id.getText());
             if (mangcaluaValue.getPrimitiveType() == PrimitiveType.STRING) {
                 ParseTreeWalker treeWalker = new ParseTreeWalker();
-                treeWalker.walk(this, this.rhsCtx);
+                treeWalker.walk(this, this.RHSCtx);
 
                 mangcaluaValue.setValue(builder);
             } else {

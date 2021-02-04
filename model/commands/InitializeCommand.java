@@ -37,7 +37,6 @@ public class InitializeCommand implements Command, ParseTreeListener {
 
     @Override
     public void execute() {
-        System.out.println(varDecCtx.dataType().getText());
         if (varDecCtx.dataType().getText().contains("String")){
             ParseTreeWalker treeWalker = new ParseTreeWalker();
             treeWalker.walk(this, this.rhsCtx);
@@ -60,7 +59,6 @@ public class InitializeCommand implements Command, ParseTreeListener {
                 arrEvalCommand.execute();
                 int arrIndex = arrEvalCommand.getEvaluated().intValue();
                 MangcaluaValue mangcaluaValue = scope.getVariableAllScope(mutableCtx.Identifier().getText());
-                System.out.println(mangcaluaValue.getValue().toString());
                 MangcaluaArray mangcaluaArray = (MangcaluaArray) mangcaluaValue.getValue();
                 if (mangcaluaArray.isInitialized()) {
                     MangcaluaValue curValue = mangcaluaArray.getValueAt(arrIndex);

@@ -118,9 +118,7 @@ public class EvaluateCommand implements Command, ParseTreeListener {
         MangcaluaFunction funcInstance = new MangcaluaFunction(mangcaluaFunction);
         FunctionControlTracker.getInstance().enterFunction(funcInstance);
         funcInstance.execute();
-        //System.out.println(callCtx.getText());
         this.strExp = this.strExp.replaceFirst(Pattern.quote(callCtx.getText()), Matcher.quoteReplacement(funcInstance.getReturnValue().getValue().toString()));
-        //System.out.println(this.strExp);
         FunctionControlTracker.getInstance().exitFunction();
     }
 

@@ -10,7 +10,6 @@ public class ScannerPrompt {
             return instance;
         }
         instance = new ScannerPrompt();
-        System.out.println("Scanner initialized");
 
         return instance;
     }

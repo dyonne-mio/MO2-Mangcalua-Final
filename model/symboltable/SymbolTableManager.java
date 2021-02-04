@@ -18,7 +18,6 @@ public class SymbolTableManager {
     public static SymbolTableManager getInstance() {
         if (instance == null) {
             instance = new SymbolTableManager();
-            System.out.println("Scope Manager initialized");
         }
         return instance;
     }

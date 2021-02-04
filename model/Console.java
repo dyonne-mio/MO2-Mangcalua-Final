@@ -8,7 +8,6 @@ public class Console {
     
     public static void startInstance() {
         if (instance == null) {
-            System.out.println("Console initialized");
             instance = new Console();
         }
         errorList = new ArrayList<>();

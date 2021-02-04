@@ -8,7 +8,6 @@ public class Printer {
     public static Printer getInstance() {
         if (instance == null) {
             instance = new Printer();
-            System.out.println("Printer initialized");
         }
         return instance;
     }

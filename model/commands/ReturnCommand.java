@@ -32,10 +32,8 @@ public class ReturnCommand implements Command {
     public void execute() {
         EvaluateCommand evalCommand = new EvaluateCommand(this.exprCtx, FunctionControlTracker.getInstance().getCurFunction().getLocalScope());
         evalCommand.execute();
-        System.out.println(evalCommand + " is eval instance");
         MangcaluaValue returnValue = FunctionControlTracker.getInstance().getCurFunction().getReturnValue();
         Util.assignValue(returnValue, evalCommand.getEvaluated());
-        System.out.println( returnValue + "'s  value is now " + evalCommand.getEvaluated());
     }
 
     public int getLine() {
