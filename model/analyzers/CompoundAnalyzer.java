@@ -11,16 +11,16 @@ public class CompoundAnalyzer {
     public CompoundAnalyzer() { }
 
     public void analyze(BlockStmtContext ctx) {
-		List<BlockStmtBodyContext> stmtList = ctx.blockStmtBody();
-		for (BlockStmtBodyContext stmt : stmtList) {
+		List<BlockStmtBodyContext> statementList = ctx.blockStmtBody();
+		for (BlockStmtBodyContext statement : statementList) {
 
-			if (stmt.scopedVariableDeclaration() != null) {
+			if (statement.scopedVariableDeclaration() != null) {
 				VariableDeclarationAnalyzer analyzer = new VariableDeclarationAnalyzer();
-				analyzer.analyze(stmt.scopedVariableDeclaration());
+				analyzer.analyze(statement.scopedVariableDeclaration());
 			}
-			else if (stmt.statement() != null) {
+			else if (statement.statement() != null) {
 				StatementAnalyzer visitor = new StatementAnalyzer();
-				visitor.visit(stmt.statement());
+				visitor.visit(statement.statement());
 			}
 		}
 		SymbolTableManager.getInstance().goToParent();

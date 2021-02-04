@@ -27,24 +27,23 @@ public class ProgramAnalyzer implements ParseTreeListener {
     @Override
     public void visitTerminal(TerminalNode node) {
         // TODO Auto-generated method stub
-
     }
 
     @Override
     public void visitErrorNode(ErrorNode node) {
         // TODO Auto-generated method stub
-
     }
 
     @Override
-	public void enterEveryRule(ParserRuleContext ctx) {
+	public void enterEveryRule(ParserRuleContext PRCtx) {
 
-		if(ctx instanceof FunctionDeclarationContext) {
-            FunctionDeclarationContext funcCtx = (FunctionDeclarationContext) ctx;
+		if(PRCtx instanceof FunctionDeclarationContext) {
+            FunctionDeclarationContext funcCtx = (FunctionDeclarationContext) PRCtx;
 			FunctionDeclarationAnalyzer analyzer = new FunctionDeclarationAnalyzer();
             analyzer.analyze(funcCtx);
-		} else if (ctx instanceof MainDeclarationContext) {
-            MainDeclarationContext mainCtx = (MainDeclarationContext) ctx;
+		}
+		else if (PRCtx instanceof MainDeclarationContext) {
+            MainDeclarationContext mainCtx = (MainDeclarationContext) PRCtx;
             BlockStmtContext compoundCtx = mainCtx.blockStmt();
             if (compoundCtx != null) {
                 LocalScope localScope = new LocalScope(SymbolTableManager.getInstance().getCurScope());

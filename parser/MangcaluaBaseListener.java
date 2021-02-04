@@ -1,4 +1,4 @@
-// Generated from C:/Users/Dyonne/Documents/GitHub/MO2-Mangcalua/grammar\Mangcalua.g4 by ANTLR 4.9
+// Generated from C:/Users/Jerald Edric/Documents/DLSU 4th year/CMPILER/interpreter/MO2-Mangcalua/grammar\Mangcalua.g4 by ANTLR 4.9
 package parser;
 
 import org.antlr.v4.runtime.ParserRuleContext;

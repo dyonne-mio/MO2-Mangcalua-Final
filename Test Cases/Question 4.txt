@@ -1,0 +1,19 @@
+void main(){
+    int first;
+    int second;
+    int third;
+    int fourth;
+    int fifth;
+
+    scan("Enter number: ", first);
+    scan("Enter number: ", second);
+    scan("Enter number: ", third);
+    scan("Enter number: ", fourth);
+    scan("Enter number: ", fifth);
+
+    print(fifth + "\n");
+    print(fourth + "\n");
+    print(third + "\n");
+    print(second + "\n");
+    print(first + "\n");
+}

@@ -1,0 +1,28 @@
+void main(){
+    int size;
+    int x = 1;
+    int rows;
+    int cols;
+    int iter = 1;
+
+    scan("Enter table size: ", size);
+
+    print("  ");
+
+    for x = 1 up to size+1 {
+        print(x + "     ");
+    } 
+
+    print("\n");
+
+    for rows = 1 up to size+1 {
+        print(rows + "     ");
+        for cols = 1 up to size+1 {
+            int prod;
+            prod = (cols * iter);
+            print(prod + "     ");
+        }
+        print("\n");
+        iter = iter + 1;
+    } 
+}

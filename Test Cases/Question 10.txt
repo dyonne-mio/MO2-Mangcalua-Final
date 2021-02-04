@@ -1,0 +1,96 @@
+func void printF(int height) 
+{ 
+    int i;
+    int j; 
+    int half = height / 2;
+
+    for i = 0 up to height { 
+        print("*"); 
+        for j = 0 up to height { 
+            if (i == 0 || (i == half && j <= half )) then {
+                print("*"); 
+        }
+            else then{
+            } 
+        } 
+        print("\n"); 
+    } 
+} 
+
+func void printL(int height) 
+{ 
+    int i = 0; 
+    int j = 0; 
+    for i = 0 up to height { 
+        print("*"); 
+        for j = 1 up to height { 
+            if (i == height - 1) then {
+                print("*"); 
+            }
+            else then{
+                print(" "); 
+            }
+        } 
+        print("\n"); 
+    } 
+} 
+
+func void printT(int height) 
+{ 
+    int i;
+    int j;
+    int half = height / 2;
+ 
+    for i = 0 up to height { 
+        for j = 0 up to height { 
+            if (i == 0) then {
+                print("*"); 
+        }
+            else if (j == half) then {
+                print("*"); 
+        }
+            else then{
+                print(" ");
+            } 
+        } 
+        print("\n"); 
+    } 
+} 
+
+void main (){
+    String letter;
+    int size;
+
+    scan("Enter char: ", letter);
+
+    if (letter == "L") then {
+        scan("Entter font size: ", size);
+        if (size >= 5) then {
+            printL(size);
+        }
+        else then {
+            print("INVALID! Font size should be atleast 5.");
+        }
+    }
+    else if (letter == "T") then {
+        scan("Entter font size: ", size);
+        if (size >= 5) then {
+            printT(size);
+        }
+        else then {
+            print("INVALID! Font size should be atleast 5.");
+        }
+    }
+    else if (letter == "F") then {
+        scan("Entter font size: ", size);
+        if (size >= 5) then {
+            printF(size);
+        }
+        else then {
+            print("INVALID! Font size should be atleast 5.");
+        }
+    }
+    else then {
+        print("INVALID! Only supports 'FTL'. Please try again");
+    }
+}

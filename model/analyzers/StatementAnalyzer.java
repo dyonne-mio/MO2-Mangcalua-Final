@@ -26,9 +26,9 @@ public class StatementAnalyzer {
 
     public StatementAnalyzer() { }
 
-	public void visit(ParserRuleContext ctx) {
-        if (ctx instanceof StatementContext) {
-            StatementContext stmtCtx = (StatementContext) ctx;
+	public void visit(ParserRuleContext PRCtx) {
+        if (PRCtx instanceof StatementContext) {
+            StatementContext stmtCtx = (StatementContext) PRCtx;
             if (stmtCtx.scanStmt() != null) {
                 ScanStmtContext scanCtx = stmtCtx.scanStmt();
                 if (scanCtx.Identifier() != null) {
@@ -69,7 +69,7 @@ public class StatementAnalyzer {
                         FunctionCallCommand functionCallCommand = new FunctionCallCommand(pf, stmtCtx.expressionStmt().call().args());
                         addCommand(functionCallCommand);
                     } else {
-                        Console.log("Undeclared function error - Try rearranging your functions.", ctx.getStart().getLine());
+                        Console.log("Undeclared function error - Try rearranging your functions.", PRCtx.getStart().getLine());
                     }
                 }
             } else if (stmtCtx.returnStmt() != null) {
@@ -81,8 +81,8 @@ public class StatementAnalyzer {
                 UndeclaredChecker undeclaredSemCheck = new UndeclaredChecker(stmtCtx.returnStmt().simpleExpression());
                 undeclaredSemCheck.check();
             } 
-        } else if (ctx instanceof SelectionStmtContext) {
-            SelectionStmtContext ifCtx = (SelectionStmtContext) ctx;
+        } else if (PRCtx instanceof SelectionStmtContext) {
+            SelectionStmtContext ifCtx = (SelectionStmtContext) PRCtx;
             analyzeSelection(ifCtx);
         } 
     }

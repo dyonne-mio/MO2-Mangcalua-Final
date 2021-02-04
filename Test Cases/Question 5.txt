@@ -1,0 +1,16 @@
+void main(){
+	constant float MULTIPLIER = 2.0f;
+	constant float DIVIDER = 1.5f;
+
+	int x = 0;
+	int y = 0;
+	int z = 0;
+
+	x = x + 4;
+	y = y + 5;
+	z = z + 6;
+
+	float finalValue = (((x + y) * MULTIPLIER) / DIVIDER + x + y) - y * MULTIPLIER;
+
+	print("Value is: " + (finalValue * MULTIPLIER * MULTIPLIER)); 
+}

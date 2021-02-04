@@ -41,10 +41,10 @@ public class VariableDeclarationAnalyzer implements ParseTreeListener {
 	}
 
     @Override
-	public void enterEveryRule(ParserRuleContext ctx) {
+	public void enterEveryRule(ParserRuleContext PRCtx) {
 
-		if (ctx instanceof ScopedVariableDeclarationContext) {
-			ScopedVariableDeclarationContext scopedVarDecCtx = (ScopedVariableDeclarationContext) ctx;
+		if (PRCtx instanceof ScopedVariableDeclarationContext) {
+			ScopedVariableDeclarationContext scopedVarDecCtx = (ScopedVariableDeclarationContext) PRCtx;
 			MangcaluaValue mangcaluaValue = null;
 			MultipleVariableChecker mulVarSemCheck = new MultipleVariableChecker(scopedVarDecCtx);
 			mulVarSemCheck.check();
@@ -53,11 +53,14 @@ public class VariableDeclarationAnalyzer implements ParseTreeListener {
 				VariableDeclarationInitializeContext varDecInitCtx = varDecCtx.variableDeclarationInitialize();
 				if (varDecCtx.dataType().Int() != null) {
 					mangcaluaValue = new MangcaluaValue(null, "int");
-				} else if (varDecCtx.dataType().Bool() != null) {
+				}
+				else if (varDecCtx.dataType().Bool() != null) {
 					mangcaluaValue = new MangcaluaValue(null, "bool");
-				} else if (varDecCtx.dataType().String() != null) {
+				}
+				else if (varDecCtx.dataType().String() != null) {
 					mangcaluaValue = new MangcaluaValue(null, "String");
-				} else if (varDecCtx.dataType().Float() != null) {
+				}
+				else if (varDecCtx.dataType().Float() != null) {
 					mangcaluaValue = new MangcaluaValue(null, "float");
 				}
 				if (mangcaluaValue != null && varDecCtx.ConstantKeyword() != null)
@@ -71,7 +74,8 @@ public class VariableDeclarationAnalyzer implements ParseTreeListener {
 				}
 				LocalScope localScope = SymbolTableManager.getInstance().getCurScope();
 				localScope.addVariable(varDecInitCtx.Identifier().getText(), mangcaluaValue);
-			} else if (scopedVarDecCtx.arrayVariableDeclaration() != null) {
+			}
+			else if (scopedVarDecCtx.arrayVariableDeclaration() != null) {
 				ArrayVariableDeclarationContext arrVarDecCtx = scopedVarDecCtx.arrayVariableDeclaration();
 				ArrayVariableDeclarationInitializeContext arrVarDecInitCtx = scopedVarDecCtx.arrayVariableDeclaration().arrayVariableDeclarationInitialize();
 				MangcaluaArray mangcaluaArray = null;
@@ -79,13 +83,16 @@ public class VariableDeclarationAnalyzer implements ParseTreeListener {
 					if (arrVarDecCtx.arrayDataType().dataType().Int() != null) {
 						mangcaluaArray = MangcaluaArray.createArray("int", arrVarDecInitCtx.Identifier().getText());
 						mangcaluaArray.setPrimitiveType(PrimitiveType.INT);
-					} else if (arrVarDecCtx.arrayDataType().dataType().Bool() != null) {
+					}
+					else if (arrVarDecCtx.arrayDataType().dataType().Bool() != null) {
 						mangcaluaArray = MangcaluaArray.createArray("bool", arrVarDecInitCtx.Identifier().getText());
 						mangcaluaArray.setPrimitiveType(PrimitiveType.BOOLEAN);
-					} else if (arrVarDecCtx.arrayDataType().dataType().String() != null) {
+					}
+					else if (arrVarDecCtx.arrayDataType().dataType().String() != null) {
 						mangcaluaArray = MangcaluaArray.createArray("String", arrVarDecInitCtx.Identifier().getText());
 						mangcaluaArray.setPrimitiveType(PrimitiveType.STRING);
-					} else if (arrVarDecCtx.arrayDataType().dataType().Float() != null) {
+					}
+					else if (arrVarDecCtx.arrayDataType().dataType().Float() != null) {
 						mangcaluaArray = MangcaluaArray.createArray("float", arrVarDecInitCtx.Identifier().getText());
 						mangcaluaArray.setPrimitiveType(PrimitiveType.FLOAT);
 					}

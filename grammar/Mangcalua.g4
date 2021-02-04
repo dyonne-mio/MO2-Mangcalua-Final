@@ -216,6 +216,7 @@ sumOperator
 mulOperator
     : Star
     | Div
+    | Modulo
     ;
 
 unaryOperator
@@ -291,6 +292,7 @@ LeftParen : '(';
 Less : '<';
 LessEqual : '<=';
 Minus : '-';
+Modulo: '%';
 Not : '!';
 NotEqual : '!=';
 OrOr : '||';

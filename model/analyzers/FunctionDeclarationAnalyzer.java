@@ -19,67 +19,67 @@ import model.representations.*;
 
 public class FunctionDeclarationAnalyzer implements ParseTreeListener {
 
-    private MangcaluaFunction func = new MangcaluaFunction();
+    private MangcaluaFunction function = new MangcaluaFunction();
     private boolean openedScope = false;
 
     public FunctionDeclarationAnalyzer() { }
 
-    public void analyze(FunctionDeclarationContext ctx) {
-        SymbolTableManager sm = SymbolTableManager.getInstance();
-        MultipleFunctionChecker checker = new MultipleFunctionChecker(ctx);
+    public void analyze(FunctionDeclarationContext FDCtx) {
+        SymbolTableManager stm = SymbolTableManager.getInstance();
+        MultipleFunctionChecker checker = new MultipleFunctionChecker(FDCtx);
         checker.check();
-        String id = ctx.Identifier().getText();
-        func.setName(id);
-        if (ctx.dataType() != null) {
-            DataTypeContext typeCtx = ctx.dataType();
+        String id = FDCtx.Identifier().getText();
+        function.setName(id);
+        if (FDCtx.dataType() != null) {
+            DataTypeContext typeCtx = FDCtx.dataType();
             if (typeCtx.Int()!= null)
-                func.setReturnType(FunctionType.INT);
+                function.setReturnType(FunctionType.INT);
             else if (typeCtx.Bool()!= null)
-                func.setReturnType(FunctionType.BOOLEAN);
+                function.setReturnType(FunctionType.BOOLEAN);
             else if (typeCtx.String()!= null)
-                func.setReturnType(FunctionType.STRING);
+                function.setReturnType(FunctionType.STRING);
             else if (typeCtx.Float()!= null)
-                func.setReturnType(FunctionType.FLOAT);
+                function.setReturnType(FunctionType.FLOAT);
         }
-        else if (ctx.arrayDataType() != null) {
-            DataTypeContext typeCtx = ctx.arrayDataType().dataType();
+        else if (FDCtx.arrayDataType() != null) {
+            DataTypeContext typeCtx = FDCtx.arrayDataType().dataType();
             if (typeCtx.Int()!= null)
-                func.setReturnType(FunctionType.INT, 1);
+                function.setReturnType(FunctionType.INT, 1);
             else if (typeCtx.Bool()!= null)
-                func.setReturnType(FunctionType.BOOLEAN, 1);
+                function.setReturnType(FunctionType.BOOLEAN, 1);
             else if (typeCtx.String()!= null)
-                func.setReturnType(FunctionType.STRING, 1);
+                function.setReturnType(FunctionType.STRING, 1);
             else if (typeCtx.Float()!= null)
-                func.setReturnType(FunctionType.FLOAT, 1);
+                function.setReturnType(FunctionType.FLOAT, 1);
         }
-        else if (ctx.Void() != null)
-            func.setReturnType(FunctionType.VOID);
+        else if (FDCtx.Void() != null)
+            function.setReturnType(FunctionType.VOID);
 
-        sm.addFunction(id, func);
+        stm.addFunction(id, function);
         ParseTreeWalker walker = new ParseTreeWalker();
-        walker.walk(this, ctx);
+        walker.walk(this, FDCtx);
     }
 
     @Override
 	public void enterEveryRule(ParserRuleContext ctx) {
         if (ctx instanceof ParamsContext) {
             ParamsContext paramsCtx = (ParamsContext) ctx;
-            func.getLocalScope().setParent(SymbolTableManager.getInstance().getCurScope());
-            SymbolTableManager.getInstance().setCurScope(func.getLocalScope());
+            function.getLocalScope().setParent(SymbolTableManager.getInstance().getCurScope());
+            SymbolTableManager.getInstance().setCurScope(function.getLocalScope());
             if (paramsCtx.parameter() != null) {
-                ParameterAnalyzer analyzer = new ParameterAnalyzer(func);
+                ParameterAnalyzer analyzer = new ParameterAnalyzer(function);
                 analyzer.analyze(paramsCtx.parameter());
             }
         } else if (ctx instanceof BlockStmtContext && !openedScope) {
             openedScope = true;
-            RuntimeManager.getInstance().openFunctionDeclaration(func);
-            FunctionReturnTracker.getInstance().setCurFunction(func);
+            RuntimeManager.getInstance().openFunctionDeclaration(function);
+            FunctionReturnTracker.getInstance().setCurFunction(function);
             BlockStmtContext bCtx = (BlockStmtContext) ctx;
             CompoundAnalyzer analyzer = new CompoundAnalyzer();
             analyzer.analyze(bCtx);
 
-            if (!FunctionReturnTracker.getInstance().hasReturn() && func.getReturnType() != FunctionType.VOID)
-                Console.log("Missing return statement for function \'" + func.getName() + "\'", ctx.getStart().getLine());
+            if (!FunctionReturnTracker.getInstance().hasReturn() && function.getReturnType() != FunctionType.VOID)
+                Console.log("Missing return statement for function \'" + function.getName() + "\'", ctx.getStart().getLine());
 
             RuntimeManager.getInstance().closeFunctionDeclaration();
             FunctionReturnTracker.getInstance().reset();
@@ -89,20 +89,15 @@ public class FunctionDeclarationAnalyzer implements ParseTreeListener {
 
     @Override
 	public void exitEveryRule(ParserRuleContext ctx) {
-		
 	}
 
     @Override
 	public void visitTerminal(TerminalNode node) {
 		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
 	public void visitErrorNode(ErrorNode node) {
 		// TODO Auto-generated method stub
-		
 	}
-
-    
 }

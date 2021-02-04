@@ -1,0 +1,117 @@
+void main(){
+    int num;
+    int divideSteps = 0;
+    int conquerSteps = 0;
+    scan("How many numbers?", num);
+    int[] arr = create int[num];
+
+    for int x = 0 up to num{
+        int temp;
+        scan("Enter number: ", temp);
+        arr[x] = temp;
+    }
+
+    for int y = 0 up to num{
+        int temp2 = arr[y];
+    }
+    
+    print("Sorted: ");
+    int i;
+    int key;
+    int j;
+    
+    for i = 0 up to num - 1{
+        for j = i + 1 up to num {
+                if(arr[j] < arr[i]) then{
+                    int temp = arr[j];
+                    arr[j] = arr[i];
+                    arr[i] = temp;
+	            conquerSteps = conquerSteps + 1;		    
+                }
+		divideSteps = divideSteps + 1;
+            }
+    } 
+
+    for int z = 0 up to num{
+        int temp3 = arr[z];
+        print(temp3 + " ");
+    }
+
+    print("\nDivide steps: " + divideSteps);
+    print("\nConquer steps: " + conquerSteps);
+  
+    //mergeSort
+    int curr_size = 0; 
+    int left_start = 0;
+    
+    for curr_size = 1 up to num - 1{
+        for left_start = 0 up to num - 1{
+             int mid = 0;
+             if ( (left_start + curr_size - 1) < (num - 1) ) then {
+                 mid = left_start + (curr_size - 1);
+             }
+             else then {
+                 mid = (num - 1);
+             }
+             int right_end = 0;
+             if ( left_start + (2 * curr_size - 1) < (num - 1) ) then {
+                 right_end = left_start + (2 * curr_size - 1);
+             }
+             else then {
+                 right_end = (num - 1);
+             }             
+             left_start = left_start + (2 * curr_size) - 1;
+
+             i = 0;
+             j = 0;
+             int m; 
+             int k;
+             int n1 = mid - left_start + 1; 
+             int n2 = right_end - m;
+             int[] L = create int[n1];
+             int[] R = create int[n2];      
+             for i = 0 up to n1{
+                  L[i] = arr[left_start + i];
+             }   
+             for j = 0 up to n2{
+                  R[j] = arr[mid + 1 + j];
+             }
+
+	     i = 0;
+	     j = 0;
+	     k = 1; 
+
+	    int stop = 0;
+
+	    for stop = 0 up to n1{
+		if (i >= n1 || j >= n2) then {
+		   stop = n1 + 1;
+		}
+	        else if (L[i] <= R[j]) then {
+                   arr[k] = L[i];
+                   i = i + 1;
+               }
+		else then {
+		   arr[k] = R[j];
+                   j = j + 1;
+		}
+		k = k + 1;
+ 	    }
+
+           for i up to n1 {
+            arr[k] = L[i];
+            i = i + 1;
+            k = k + 1;
+           }  
+
+	   for j up to n2 {
+            arr[k] = R[j];
+            j = j + 1;
+            k = k + 1;
+           }  
+        }
+     curr_size = (curr_size * 2) - 1;
+    }
+
+    
+}

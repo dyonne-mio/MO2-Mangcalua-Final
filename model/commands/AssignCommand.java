@@ -39,8 +39,8 @@ public class AssignCommand implements Command, ParseTreeListener{
         this.mutableCtx = mutableCtx;
         this.scope = SymbolTableManager.getInstance().getCurScope();
 
-        UndeclaredChecker undeclaredSemCheck = new UndeclaredChecker(rhsCtx);
-        undeclaredSemCheck.check();
+        UndeclaredChecker checker = new UndeclaredChecker(rhsCtx);
+        checker.check();
 
         MangcaluaValue mangcaluaValue = scope.getVariableAllScope(id.getText());
 
@@ -60,79 +60,76 @@ public class AssignCommand implements Command, ParseTreeListener{
         else {
             MangcaluaArray pa = (MangcaluaArray) mangcaluaValue.getValue();
 
-            TypeMismatchChecker typeMMSemCheck = new TypeMismatchChecker(new MangcaluaValue(null, pa.getPrimitiveType()), rhsCtx);
-            typeMMSemCheck.check();
+            TypeMismatchChecker checker1 = new TypeMismatchChecker(new MangcaluaValue(null, pa.getPrimitiveType()), rhsCtx);
+            checker1.check();
         }
         evalCommand = new EvaluateCommand(rhsCtx);
     }
 
     @Override
     public void execute() {
-        if (mutableCtx.LeftBracket() == null) {
-            MangcaluaValue pseudoValue = scope.getVariableAllScope(id.getText());
-            if (pseudoValue.getPrimitiveType() == PrimitiveType.STRING) {
-                ParseTreeWalker treeWalker = new ParseTreeWalker();
-                treeWalker.walk(this, this.rhsCtx);
 
-                pseudoValue.setValue(builder);
-            }
-            else {
-                evalCommand.execute();
-                Util.assignValue(pseudoValue, evalCommand.getEvaluated());
-            }
-        }
-        else {
+        if (mutableCtx.LeftBracket() != null) {
+
             EvaluateCommand arrEvalCommand = new EvaluateCommand(mutableCtx.simpleExpression(), this.scope);
             arrEvalCommand.execute();
 
             int arrIndex = arrEvalCommand.getEvaluated().intValue();
 
-            MangcaluaValue pseudoValue = scope.getVariableAllScope(id.getText());
-            System.out.println(pseudoValue.getValue().toString());
-            MangcaluaArray pseudoArray = (MangcaluaArray) pseudoValue.getValue();
+            MangcaluaValue mangcaluaValue = scope.getVariableAllScope(id.getText());
+            MangcaluaArray mangcaluaArray = (MangcaluaArray) mangcaluaValue.getValue();
 
-            switch (pseudoArray.getPrimitiveType()) {
-                case STRING:
-                    ParseTreeWalker treeWalker = new ParseTreeWalker();
-                    treeWalker.walk(this, this.rhsCtx);
+            if (mangcaluaArray.getPrimitiveType() == PrimitiveType.STRING) {
+                ParseTreeWalker treeWalker = new ParseTreeWalker();
+                treeWalker.walk(this, this.rhsCtx);
 
-                    if (!pseudoArray.isInitialized()) {
-                        Printer.getInstance().print("Array is not initialized", mutableCtx.getStart().getLine());
+                if (mangcaluaArray.isInitialized()) {
+                    MangcaluaValue curValue = mangcaluaArray.getValueAt(arrIndex);
+
+                    if (curValue != null) {
+                        curValue.setValue(this.builder);
+                        mangcaluaArray.updateValueAt(curValue, arrIndex);
+                    } else {
+                        Printer.getInstance().print("Array Index is out of bounds.", mutableCtx.getStart().getLine());
                         RuntimeManager.getInstance().killExecution();
                     }
-                    else {
-                        MangcaluaValue curValue = pseudoArray.getValueAt(arrIndex);
-                        if (curValue == null) {
-                            Printer.getInstance().print("Array Index is out of bounds.", mutableCtx.getStart().getLine());
-                            RuntimeManager.getInstance().killExecution();
-                        }
-                        else {
-                            curValue.setValue(this.builder);
-                            pseudoArray.updateValueAt(curValue, arrIndex);
-                        }
-                    }
 
-                    break;
-                default:
-                    evalCommand.execute();
-                    BigDecimal result = evalCommand.getEvaluated();
+                } else {
+                    Printer.getInstance().print("Array is not initialized", mutableCtx.getStart().getLine());
+                    RuntimeManager.getInstance().killExecution();
+                }
 
-                    if (!pseudoArray.isInitialized()) {
-                        Printer.getInstance().print("Array is not initialized", mutableCtx.getStart().getLine());
+            } else {
+                evalCommand.execute();
+                BigDecimal result = evalCommand.getEvaluated();
+
+                if (mangcaluaArray.isInitialized()) {
+                    MangcaluaValue curValue = mangcaluaArray.getValueAt(arrIndex);
+
+                    if (curValue != null) {
+                        Util.assignValue(curValue, result);
+                        mangcaluaArray.updateValueAt(curValue, arrIndex);
+                    } else {
+                        Printer.getInstance().print("Array Index is out of bounds.", mutableCtx.getStart().getLine());
                         RuntimeManager.getInstance().killExecution();
                     }
-                    else {
-                        MangcaluaValue curValue = pseudoArray.getValueAt(arrIndex);
-                        if (curValue == null) {
-                            Printer.getInstance().print("Array Index is out of bounds.", mutableCtx.getStart().getLine());
-                            RuntimeManager.getInstance().killExecution();
-                        }
-                        else {
-                            Util.assignValue(curValue, result);
-                            pseudoArray.updateValueAt(curValue, arrIndex);
-                        }
-                    }
-                    break;
+
+                } else {
+                    Printer.getInstance().print("Array is not initialized", mutableCtx.getStart().getLine());
+                    RuntimeManager.getInstance().killExecution();
+                }
+            }
+
+        } else {
+            MangcaluaValue mangcaluaValue = scope.getVariableAllScope(id.getText());
+            if (mangcaluaValue.getPrimitiveType() == PrimitiveType.STRING) {
+                ParseTreeWalker treeWalker = new ParseTreeWalker();
+                treeWalker.walk(this, this.rhsCtx);
+
+                mangcaluaValue.setValue(builder);
+            } else {
+                evalCommand.execute();
+                Util.assignValue(mangcaluaValue, evalCommand.getEvaluated());
             }
         }
         this.builder = "";
@@ -141,52 +138,52 @@ public class AssignCommand implements Command, ParseTreeListener{
     @Override
     public void enterEveryRule(ParserRuleContext ctx) {
 
-        if (!(ctx instanceof MutableContext)) {
-            if (ctx instanceof ConstantContext) {
-                ConstantContext constCtx  = (ConstantContext) ctx;
-                if (!isInExcluded(constCtx.getText())){
-                    if (constCtx.StringLiteral()!= null) {
-                        this.builder += constCtx.StringLiteral().getText().replaceAll("^\"+|\"+$", "");
-                    } else {
-                        this.builder += constCtx.getText();
-                    }
-                }
-            }
-        }
-        else {
+        if (ctx instanceof MutableContext) { ///str = str + arr[i]
             MutableContext mutableCtx  = (MutableContext) ctx;
-            if (mutableCtx.LeftBracket() == null) {
-                MangcaluaValue pseudoValue = scope.getVariableAllScope(mutableCtx.Identifier().getText());
-                if (!isInExcluded(mutableCtx.getText())){
-                    this.builder += pseudoValue.getValue().toString();
-                }
-            }
-            else {
+            if (mutableCtx.LeftBracket() != null) { // if an array
                 excluded.add(mutableCtx.getText());
                 EvaluateCommand arrEvalCommand = new EvaluateCommand(mutableCtx.simpleExpression(), this.scope);
-                arrEvalCommand.execute();
+                arrEvalCommand.execute(); // rhs
 
                 int arrIndex = arrEvalCommand.getEvaluated().intValue();
-                MangcaluaValue pseudoValue = scope.getVariableAllScope(mutableCtx.Identifier().getText());
-                MangcaluaArray pseudoArray = (MangcaluaArray) pseudoValue.getValue();
 
-                if (!pseudoArray.isInitialized()) {
-                    Printer.getInstance().print("Array is not initialized", mutableCtx.getStart().getLine());
-                    RuntimeManager.getInstance().killExecution();
-                }
-                else {
-                    MangcaluaValue curValue = pseudoArray.getValueAt(arrIndex);
+                MangcaluaValue mangcaluaValue = scope.getVariableAllScope(mutableCtx.Identifier().getText());
+                MangcaluaArray mangcaluaArray = (MangcaluaArray) mangcaluaValue.getValue();
 
-                    if (curValue == null) {
+                if (mangcaluaArray.isInitialized()) {
+                    MangcaluaValue curValue = mangcaluaArray.getValueAt(arrIndex);
+
+                    if (curValue != null) {
+                        this.builder += curValue.getValue().toString();
+                    } else {
                         Printer.getInstance().print("Array Index is out of bounds.", mutableCtx.getStart().getLine());
                         RuntimeManager.getInstance().killExecution();
                     }
-                    else {
-                        this.builder += curValue.getValue().toString();
-                    }
+
+                } else {
+                    Printer.getInstance().print("Array is not initialized", mutableCtx.getStart().getLine());
+                    RuntimeManager.getInstance().killExecution();
+                }
+
+
+            } else {
+                MangcaluaValue mangcaluaValue = scope.getVariableAllScope(mutableCtx.Identifier().getText());
+                if (!isInExcluded(mutableCtx.getText())){
+                    this.builder += mangcaluaValue.getValue().toString();
+                }
+            }
+
+        } else if (ctx instanceof ConstantContext) {
+            ConstantContext constCtx  = (ConstantContext) ctx;
+            if (!isInExcluded(constCtx.getText())){
+                if (constCtx.StringLiteral()!= null) {
+                    this.builder += constCtx.StringLiteral().getText().replaceAll("^\"+|\"+$", "");
+                } else {
+                    this.builder += constCtx.getText();
                 }
             }
         }
+
     }
 
     @Override

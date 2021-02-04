@@ -1,0 +1,35 @@
+void main(){
+    int num;
+    scan("How many numbers?", num);
+    int[] arr = create int[num];
+
+    for int x = 0 up to num{
+        int temp;
+        scan("Enter number: ", temp);
+        arr[x] = temp;
+    }
+
+    for int y = 0 up to num{
+        int temp2 = arr[y];
+    }
+
+    //insertSort
+    int i;
+    int key;
+    int j;
+    
+    for i = 0 up to num - 1{
+        for j = i + 1 up to num {
+                if(arr[j] < arr[i]) then{
+                    int temp = arr[j];
+                    arr[j] = arr[i];
+                    arr[i] = temp;
+                }
+            }
+    }
+
+    for int z = 0 up to num{
+        int temp3 = arr[z];
+        print(temp3 + " ");
+    }
+}

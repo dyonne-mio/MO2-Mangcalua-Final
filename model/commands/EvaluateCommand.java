@@ -40,10 +40,27 @@ public class EvaluateCommand implements Command, ParseTreeListener {
     @Override
     public void execute() {
         this.strExp = simpleCtx.getText();
-        ParseTreeWalker treeWalker = new ParseTreeWalker();
-        treeWalker.walk(this, this.simpleCtx);
-        Expression evalEx = new Expression(this.strExp.replace("f", ""));
-        this.evaluated = evalEx.eval();
+
+        if (this.strExp.contains("\"")) {
+            String newComparisons = this.strExp.replaceAll("\"", "");
+            String[] cmpArray = newComparisons.split("==");
+
+            MangcaluaValue mangcaluaValue = this.scope.getVariableAllScope(cmpArray[0].trim());
+            String cmpString = mangcaluaValue.getValue().toString();
+
+            if (cmpString.equals(cmpArray[1].trim())){
+                this.evaluated = new BigDecimal(1);
+            } else {
+                this.evaluated = new BigDecimal(0);
+            }
+
+        } else {
+            ParseTreeWalker treeWalker = new ParseTreeWalker();
+            treeWalker.walk(this, this.simpleCtx);
+
+            Expression evalEx = new Expression(this.strExp.replace("f", ""));
+            this.evaluated = evalEx.eval();
+        }
     }
 
 
@@ -51,7 +68,6 @@ public class EvaluateCommand implements Command, ParseTreeListener {
     public void enterEveryRule(ParserRuleContext ctx) {
         if (ctx instanceof CallContext) {
             CallContext callCtx  = (CallContext) ctx;
-            System.out.println(callCtx.getText());
             this.evaluateCall(callCtx);
         } else if (ctx instanceof MutableContext) {
             MutableContext mutableCtx  = (MutableContext) ctx;
@@ -60,37 +76,36 @@ public class EvaluateCommand implements Command, ParseTreeListener {
 
     }
 
-
     public void evaluateCall(CallContext callCtx) {
         String functionName = callCtx.Identifier().getText();
         MangcaluaFunction mangcaluaFunction = SymbolTableManager.getInstance().getFunction(functionName);
-        ParameterCounterChecker paramCountSemCheck = new ParameterCounterChecker(mangcaluaFunction, callCtx.args());
-        paramCountSemCheck.check();
+        ParameterCounterChecker checker = new ParameterCounterChecker(mangcaluaFunction, callCtx.args());
+        checker.check();
         if (callCtx.args().simpleExpression().size() != 0) {
             List<SimpleExpressionContext> arguments = callCtx.args().simpleExpression();
 
             for(int i = 0; i < arguments.size(); i++) {
-                SimpleExpressionContext argCtx = arguments.get(i);
+                SimpleExpressionContext expCtx = arguments.get(i);
                 if (mangcaluaFunction.getParamAt(i).getPrimitiveType() == PrimitiveType.ARRAY) {
-                    String id = argCtx.getText();
+                    String id = expCtx.getText();
                     mangcaluaFunction.mapArrayParameter(id, this.scope.getVariableAllScope(id), i);
                 } else if (mangcaluaFunction.getParamAt(i).getPrimitiveType() == PrimitiveType.STRING){
 
-                    if(argCtx.getText().replaceAll("\".+?\"", "").contains("+")) {
+                    if(expCtx.getText().replaceAll("\".+?\"", "").contains("+")) {
                         Printer.getInstance().print("String concatenation not supported.", callCtx.getStart().getLine());
                         RuntimeManager.getInstance().killExecution();
-                    }else if (argCtx.getText().contains("\"")) {
-                        String id = argCtx.getText().replaceAll("^\"+|\"+$", "");
+                    }else if (expCtx.getText().contains("\"")) {
+                        String id = expCtx.getText().replaceAll("^\"+|\"+$", "");
 
                         MangcaluaValue paramValue = mangcaluaFunction.getParamAt(i);
                         paramValue.setValue(id);
                     } else {
-                        String id = argCtx.getText();
+                        String id = expCtx.getText();
                         MangcaluaValue paramValue = mangcaluaFunction.getParamAt(i);
                         paramValue.setValue(scope.getVariableAllScope(id).getValue());
                     }
                 } else {
-                    EvaluateCommand evalCommand = new EvaluateCommand(argCtx, this.scope);
+                    EvaluateCommand evalCommand = new EvaluateCommand(expCtx, this.scope);
                     evalCommand.execute();
                     if (i < mangcaluaFunction.getParameterCount()) {
                         MangcaluaValue paramValue = mangcaluaFunction.getParamAt(i);
@@ -103,9 +118,9 @@ public class EvaluateCommand implements Command, ParseTreeListener {
         MangcaluaFunction funcInstance = new MangcaluaFunction(mangcaluaFunction);
         FunctionControlTracker.getInstance().enterFunction(funcInstance);
         funcInstance.execute();
-        System.out.println(callCtx.getText());
+        //System.out.println(callCtx.getText());
         this.strExp = this.strExp.replaceFirst(Pattern.quote(callCtx.getText()), Matcher.quoteReplacement(funcInstance.getReturnValue().getValue().toString()));
-        System.out.println(this.strExp);
+        //System.out.println(this.strExp);
         FunctionControlTracker.getInstance().exitFunction();
     }
 

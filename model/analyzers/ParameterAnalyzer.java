@@ -38,12 +38,12 @@ public class ParameterAnalyzer implements ParseTreeListener {
     }
 
     @Override
-	public void enterEveryRule(ParserRuleContext ctx) {
-        if (ctx instanceof ParameterContext) {
-            ParameterContext parameterCtx = (ParameterContext) ctx;
+	public void enterEveryRule(ParserRuleContext PRCtx) {
+        if (PRCtx instanceof ParameterContext) {
+            ParameterContext parameterCtx = (ParameterContext) PRCtx;
             DataTypeSelectorContext typeSpecifierSelectorContext= parameterCtx.dataTypeSelector();
             if (func.searchParameter(parameterCtx.Identifier().getText()))
-                Console.log("Duplicate parameter found", ctx.getStart().getLine());
+                Console.log("Duplicate parameter found", PRCtx.getStart().getLine());
             else {
                 MangcaluaValue mangcaluaValue = null;
                 if (typeSpecifierSelectorContext.dataType() != null) {

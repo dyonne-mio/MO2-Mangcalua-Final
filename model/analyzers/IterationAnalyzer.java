@@ -29,6 +29,7 @@ public class IterationAnalyzer {
                 if (mangcaluaValue.getPrimitiveType() != PrimitiveType.INT)
                     Console.log("Type mismatch error - only integers can be used in while statements", ctx.getStart().getLine());
             }
+
             UndeclaredChecker undeclaredSemCheck = new UndeclaredChecker(whileCtx.simpleExpression());
             undeclaredSemCheck.check();
             TypeMismatchChecker typeMMSemCheck = new TypeMismatchChecker(new MangcaluaValue(null, "int"), whileCtx.simpleExpression());
@@ -40,6 +41,7 @@ public class IterationAnalyzer {
             CompoundAnalyzer analyzer = new CompoundAnalyzer();
             analyzer.analyze(whileCtx.blockStmt());
             StatementControlTracker.getInstance().exitControlledCommand();
+
         } else if (ctx.forStatement() != null) {
             ForStatementContext forCtx = ctx.forStatement();
             LoopDeclarationContext loopDecCtx = forCtx.loopDeclaration();
@@ -57,18 +59,22 @@ public class IterationAnalyzer {
                             ifCommand.addIfCommand(iteratorAssignCommand);
                         else
                             ifCommand.addElseCommand(iteratorAssignCommand);
-                    }else if (stmtCtrlTracker.isControlledCommand()) {
+                    }
+                    else if (stmtCtrlTracker.isControlledCommand()) {
                         ControlledCommand controlledCommand = (ControlledCommand) stmtCtrlTracker.getCurCommand();
                         controlledCommand.addCommand(iteratorAssignCommand);
-                    }else
+                    }
+                    else
                         RuntimeManager.getInstance().addCommand(iteratorAssignCommand);
                 }
 
-            } else {
+            }
+            else {
                 MangcaluaValue mangcaluaValue = SymbolTableManager.getInstance().searchMyScopeVariable(loopDecCtx.Identifier().getText());
                 if(mangcaluaValue == null) {
                     Console.log("Undeclared variable error - '" + loopDecCtx.Identifier().getText()  + "' cannot be found at for statement", ctx.getStart().getLine());
-                } else {
+                }
+                else {
                     if (mangcaluaValue.getPrimitiveType() != PrimitiveType.INT)
                         Console.log("Type mismatch error - only integers can be used in for statements", ctx.getStart().getLine());
                 }
@@ -81,10 +87,12 @@ public class IterationAnalyzer {
                             ifCommand.addIfCommand(iteratorAssignCommand);
                         else
                             ifCommand.addElseCommand(iteratorAssignCommand);
-                    } else if (stmtCtrlTracker.isControlledCommand()) {
+                    }
+                    else if (stmtCtrlTracker.isControlledCommand()) {
                         ControlledCommand controlledCommand = (ControlledCommand) stmtCtrlTracker.getCurCommand();
                         controlledCommand.addCommand(iteratorAssignCommand);
-                    }  else {
+                    }
+                    else {
                         RuntimeManager.getInstance().addCommand(iteratorAssignCommand);
                     }
                 }

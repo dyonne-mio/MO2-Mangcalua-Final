@@ -1,0 +1,38 @@
+void main(){
+    int numbers;
+
+    scan("How many numbers do you want to enter?", numbers);
+    int[] arr = create int[numbers];
+
+    int x = 0;
+
+    for x = 0 up to numbers {
+        int temp;
+        scan("Enter number: ", temp);
+
+        arr[x] = temp;
+    }
+
+    int sum = 0;
+    int y;
+
+    for y = 0 up to numbers {
+        int temp2;
+        temp2 = sum + arr[y];
+        sum = temp2;
+    }
+
+    print("You have an array of character with size of " + sum + "!");
+
+    int z;
+    String chars = "";
+
+    for z = 0 up to sum {
+        String temp3;
+        scan("Enter character: ", temp3);
+        chars = chars + temp3;
+    } 
+
+    print("\n");
+    print(chars);
+}
